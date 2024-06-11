@@ -23,6 +23,9 @@ def process_bpr_data(df_bpr):
     # Mengambil hanya kolom-kolom yang spesifik
     bpr_data = df_bpr[required_columns]
 
+    # Menghapus baris dengan nilai kosong di kolom 'NAMA'
+    bpr_data = bpr_data.dropna(subset=['NAMA'])
+
     # Menambahkan kolom baru 'jumlah_angsuran' yang merupakan hasil penjumlahan dari kolom 'ANGSURPK' dan 'ANGSURBNG'
     bpr_data['jumlah_angsuran'] = bpr_data['ANGSURPK'] + bpr_data['ANGSURBNG']
 
@@ -33,35 +36,24 @@ def process_bpr_data(df_bpr):
     # Menyusun ulang kolom bpr_data sesuai urutan yang diinginkan
     bpr_data = bpr_data[columns]
 
-    return bpr_data
-    
-    
-    # Remove rows with missing values in the 'NAMA' column
-
-    bpr_data = bpr_data.dropna(subset=['NAMA'])
-
-    # Remove rows where all values are missing
+    # Menghapus baris di mana semua nilai adalah NaN
     bpr_data = bpr_data.dropna(how='all')
 
-    # Fill missing values in 'TGKPOKOK' and 'TGKBUNGA' columns with '-'
+    # Mengisi nilai NaN di kolom 'TGKPOKOK' dan 'TGKBUNGA' dengan '-'
     bpr_data['TGKPOKOK'] = bpr_data['TGKPOKOK'].fillna('-')
     bpr_data['TGKBUNGA'] = bpr_data['TGKBUNGA'].fillna('-')
 
-    # Format numerical columns
-
-    
+    # Memformat kolom angka
     kolom_angka = [kolom for kolom in bpr_data.columns if kolom != 'NOREKENING']
     bpr_data[kolom_angka] = bpr_data[kolom_angka].applymap(format_angka)
 
     kolom_norek = [kolom for kolom in bpr_data.columns if kolom != 'ACCNODR']
     bpr_data[kolom_norek] = bpr_data[kolom_norek].applymap(format_angka)
     
-
-    # Sort data by '_KOLEK' column
-    
+    # Mengurutkan data berdasarkan kolom '_KOLEK'
     bpr_data = bpr_data.sort_values(by='_KOLEK')
 
-    # Define color change criteria
+    # Definisikan kriteria perubahan warna
     kriteria = [
         {'kolek': 1, 'tgkp_threshold': 25, 'tgkb_threshold': 25},
         {'kolek': 2, 'tgkp_threshold': 85, 'tgkb_threshold': 85},
@@ -69,10 +61,10 @@ def process_bpr_data(df_bpr):
         {'kolek': 4, 'tgkp_threshold': 355, 'tgkb_threshold': 355}
     ]
 
-    # Add 'CEK DATA' column with default values
+    # Tambahkan kolom 'CEK DATA' dengan nilai default
     bpr_data['CEK DATA'] = ""
 
-    # Mark rows based on criteria
+    # Tandai baris berdasarkan kriteria
     for kriteria_item in kriteria:
         kolek = kriteria_item['kolek']
         tgkp_threshold = kriteria_item['tgkp_threshold']
@@ -122,7 +114,7 @@ def main():
     # Upload Excel file using Streamlit file uploader
     uploaded_file = st.file_uploader("Unggah file Excel", type=["xlsx"])
 
-     # Process and display the data if a file is uploaded
+    # Process and display the data if a file is uploaded
     if uploaded_file is not None:
         # Read the Excel file into a DataFrame
         df_bpr = pd.read_excel(uploaded_file)
