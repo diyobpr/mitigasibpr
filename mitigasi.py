@@ -12,10 +12,21 @@ def format_angka(x):
 
 # Function to process BPR data
 def process_bpr_data(df):
-    # Select specific columns
-    bpr_data = df[['_KOLEK','ACCNODR', 'NOREKENING', 'NAMA', 'BAKIDEBET', 'ANGSURPK', 'ANGSURBNG', 'TGKPOKOK',  'TGKBUNGA','XTGKP', 'XTGKB', 'HR_TGKP', 'HR_TGKB', 'PPAP', 'NAMA_INST']]
+    # Mengambil hanya kolom-kolom yang spesifik
+    bpr_data = df_bpr[['_KOLEK', 'ACCNODR', 'NOREKENING','NAMA','NAMA_INST','PETUGAS','ALAMAT','TGL_BUKA','TGL_JT','PLAFOND','BAKIDEBET','ANGSURPK',
+                   'ANGSURBNG','TGKPOKOK','TGKBUNGA','HR_TGKP','HR_TGKB','PPAP','CADBUNGA','DENDA']]
 
+    # Menambahkan kolom baru 'jumlah_angsuran' yang merupakan hasil penjumlahan dari kolom 'ANGSURPK' dan 'ANGSURBNG'
+    bpr_data['jumlah_angsuran'] = bpr_data['ANGSURPK'] + bpr_data['ANGSURBNG']
+
+    # Mendefinisikan urutan kolom baru dengan 'jumlah_angsuran' ditempatkan di sebelah kolom 'ANGSURBNG'
+    columns = ['_KOLEK', 'ACCNODR', 'NOREKENING', 'NAMA', 'NAMA_INST', 'PETUGAS', 'ALAMAT', 'TGL_BUKA', 'TGL_JT', 'PLAFOND', 'BAKIDEBET', 
+           'ANGSURPK', 'ANGSURBNG', 'jumlah_angsuran', 'TGKPOKOK', 'TGKBUNGA', 'HR_TGKP', 'HR_TGKB', 'PPAP', 'CADBUNGA', 'DENDA']
+
+    # Menyusun ulang kolom bpr_data sesuai urutan yang diinginkan
+    bpr_data = bpr_data[columns]
     # Remove rows with missing values in the 'NAMA' column
+
     bpr_data = bpr_data.dropna(subset=['NAMA'])
 
     # Remove rows where all values are missing
