@@ -12,19 +12,38 @@ def format_angka(x):
 
 # Function to process BPR data
 def process_bpr_data(df):
+        # Pastikan kolom yang diakses ada di DataFrame
+    required_columns = ['_KOLEK', 'ACCNODR', 'NOREKENING','NAMA','NAMA_INST','PETUGAS','ALAMAT','TGL_BUKA','TGL_JT','PLAFOND','BAKIDEBET',
+                        'ANGSURPK', 'ANGSURBNG','TGKPOKOK','TGKBUNGA','HR_TGKP','HR_TGKB','PPAP','CADBUNGA','DENDA']
+    
+    missing_columns = [col for col in required_columns if col not in df_bpr.columns]
+    if missing_columns:
+        raise ValueError(f"Missing columns in the input DataFrame: {missing_columns}")
+
     # Mengambil hanya kolom-kolom yang spesifik
-    bpr_data = df_bpr[['_KOLEK', 'ACCNODR', 'NOREKENING','NAMA','NAMA_INST','PETUGAS','ALAMAT','TGL_BUKA','TGL_JT','PLAFOND','BAKIDEBET','ANGSURPK',
-                   'ANGSURBNG','TGKPOKOK','TGKBUNGA','HR_TGKP','HR_TGKB','PPAP','CADBUNGA','DENDA']]
+    bpr_data = df_bpr[required_columns]
 
     # Menambahkan kolom baru 'jumlah_angsuran' yang merupakan hasil penjumlahan dari kolom 'ANGSURPK' dan 'ANGSURBNG'
     bpr_data['jumlah_angsuran'] = bpr_data['ANGSURPK'] + bpr_data['ANGSURBNG']
 
     # Mendefinisikan urutan kolom baru dengan 'jumlah_angsuran' ditempatkan di sebelah kolom 'ANGSURBNG'
     columns = ['_KOLEK', 'ACCNODR', 'NOREKENING', 'NAMA', 'NAMA_INST', 'PETUGAS', 'ALAMAT', 'TGL_BUKA', 'TGL_JT', 'PLAFOND', 'BAKIDEBET', 
-           'ANGSURPK', 'ANGSURBNG', 'jumlah_angsuran', 'TGKPOKOK', 'TGKBUNGA', 'HR_TGKP', 'HR_TGKB', 'PPAP', 'CADBUNGA', 'DENDA']
+               'ANGSURPK', 'ANGSURBNG', 'jumlah_angsuran', 'TGKPOKOK', 'TGKBUNGA', 'HR_TGKP', 'HR_TGKB', 'PPAP', 'CADBUNGA', 'DENDA']
 
     # Menyusun ulang kolom bpr_data sesuai urutan yang diinginkan
     bpr_data = bpr_data[columns]
+
+
+
+
+
+
+
+
+
+
+    
+    
     # Remove rows with missing values in the 'NAMA' column
 
     bpr_data = bpr_data.dropna(subset=['NAMA'])
@@ -47,6 +66,7 @@ def process_bpr_data(df):
     
 
     # Sort data by '_KOLEK' column
+    
     bpr_data = bpr_data.sort_values(by='_KOLEK')
 
     # Define color change criteria
