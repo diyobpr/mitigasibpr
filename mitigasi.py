@@ -10,12 +10,12 @@ def format_angka(x):
         return '{:.0f}'.format(x)
     return x
 
-# Function to process BPR data
-def process_bpr_data(df):
-        # Pastikan kolom yang diakses ada di DataFrame
+def process_bpr_data(df_bpr):
+    # Daftar kolom yang diharapkan
     required_columns = ['_KOLEK', 'ACCNODR', 'NOREKENING','NAMA','NAMA_INST','PETUGAS','ALAMAT','TGL_BUKA','TGL_JT','PLAFOND','BAKIDEBET',
                         'ANGSURPK', 'ANGSURBNG','TGKPOKOK','TGKBUNGA','HR_TGKP','HR_TGKB','PPAP','CADBUNGA','DENDA']
     
+    # Memeriksa apakah kolom yang diperlukan ada di DataFrame
     missing_columns = [col for col in required_columns if col not in df_bpr.columns]
     if missing_columns:
         raise ValueError(f"Missing columns in the input DataFrame: {missing_columns}")
@@ -33,15 +33,7 @@ def process_bpr_data(df):
     # Menyusun ulang kolom bpr_data sesuai urutan yang diinginkan
     bpr_data = bpr_data[columns]
 
-
-
-
-
-
-
-
-
-
+    return bpr_data
     
     
     # Remove rows with missing values in the 'NAMA' column
