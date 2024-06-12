@@ -29,27 +29,21 @@ def process_bpr_data(df_bpr):
     # Menambahkan kolom baru 'jumlah_angsuran' yang merupakan hasil penjumlahan dari kolom 'ANGSURPK' dan 'ANGSURBNG'
     bpr_data['jumlah_angsuran'] = bpr_data['ANGSURPK'] + bpr_data['ANGSURBNG']
 
-    # Mendefinisikan urutan kolom baru dengan 'jumlah_angsuran' ditempatkan di sebelah kolom 'ANGSURBNG'
-    columns = ['_KOLEK', 'ACCNODR', 'NOREKENING', 'NAMA', 'NAMA_INST', 'PETUGAS', 'ALAMAT', 'TGL_BUKA', 'TGL_JT', 'PLAFOND', 'BAKIDEBET', 
-               'ANGSURPK', 'ANGSURBNG', 'jumlah_angsuran', 'TGKPOKOK', 'TGKBUNGA', 'HR_TGKP', 'HR_TGKB', 'PPAP', 'CADBUNGA', 'DENDA']
-
-    # Menyusun ulang kolom bpr_data sesuai urutan yang diinginkan
-    bpr_data = bpr_data[columns]
+    # Konversi kolom-kolom yang relevan ke tipe numerik
+    kolom_numerik = ['ANGSURPK', 'ANGSURBNG', 'jumlah_angsuran', 'TGKPOKOK', 'TGKBUNGA']
+    bpr_data[kolom_numerik] = bpr_data[kolom_numerik].apply(pd.to_numeric, errors='coerce')
 
     # Menghapus baris di mana semua nilai adalah NaN
     bpr_data = bpr_data.dropna(how='all')
 
-    # Mengisi nilai NaN di kolom 'TGKPOKOK' dan 'TGKBUNGA' dengan '-'
-    bpr_data['TGKPOKOK'] = bpr_data['TGKPOKOK'].fillna('-')
-    bpr_data['TGKBUNGA'] = bpr_data['TGKBUNGA'].fillna('-')
+    # Mengisi nilai NaN di kolom 'TGKPOKOK' dan 'TGKBUNGA' dengan 0
+    bpr_data['TGKPOKOK'] = bpr_data['TGKPOKOK'].fillna(0)
+    bpr_data['TGKBUNGA'] = bpr_data['TGKBUNGA'].fillna(0)
 
-    # Memformat kolom angka
+    # Format angka dalam kolom-kolom numerik
     kolom_angka = [kolom for kolom in bpr_data.columns if kolom != 'NOREKENING']
     bpr_data[kolom_angka] = bpr_data[kolom_angka].applymap(format_angka)
 
-    kolom_norek = [kolom for kolom in bpr_data.columns if kolom != 'ACCNODR']
-    bpr_data[kolom_norek] = bpr_data[kolom_norek].applymap(format_angka)
-    
     # Mengurutkan data berdasarkan kolom '_KOLEK'
     bpr_data = bpr_data.sort_values(by='_KOLEK')
 
